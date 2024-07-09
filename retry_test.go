@@ -75,18 +75,24 @@ func TestAlg(t *testing.T) {
 		{
 			b:      time.Duration(0.75 * float64(time.Second)),
 			c:      3,
-			expect: time.Duration(1.734375 * float64(time.Second)),
+			expect: time.Duration(2.3125 * float64(time.Second)),
 		},
 		{
 			b:      time.Duration(1.5 * float64(time.Second)),
 			c:      3,
-			expect: time.Duration(7.125 * float64(time.Second)),
+			expect: time.Duration(4.75 * float64(time.Second)),
+		},
+		{
+			// An exponential backoff algorithm where b = 2 is referred to as a binary exponential backoff algorithm.
+			b:      time.Duration(2.0 * float64(time.Second)),
+			c:      3,
+			expect: time.Duration(7 * float64(time.Second)),
 		},
 	}
 	for _, tc := range testCases {
 		var totalElapsed time.Duration
 		for i := 0; i < tc.c; i++ {
-			t := math.Pow(tc.b.Seconds(), float64(i+1))
+			t := math.Pow(tc.b.Seconds(), float64(i))
 			totalElapsed += time.Duration(t * float64(time.Second))
 		}
 		assert.Equal(t, tc.expect, totalElapsed)
